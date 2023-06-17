@@ -3,6 +3,7 @@ exports.up = function (knex) {
     table.increments('id').primary();
     table.string('title').notNullable();
     table.text('content').notNullable();
+    table.text('bloodtype').notNullable();
     table.timestamp('created_at').defaultTo(knex.fn.now());
     table.timestamp('updated_at').defaultTo(knex.fn.now());
   });
