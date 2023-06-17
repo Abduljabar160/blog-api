@@ -30,14 +30,19 @@ router.get('/:id', (req, res) => {
 
 // Create a new blog post
 router.post('/', async(req, res) => {
-  const { title, content } = req.body;
+  const { title, content, bloodtype } = req.body;
+
+  if (!bloodtype) {
+    return res.status(400).json({ error: 'Bloodtype is required.' });
+  }
+
   if (!title || !content) {
     return res.status(400).json({ error: 'Title and content are required' });
   }
   
   try {
     const result = await db('posts')
-    .insert({ title, content, user_id: req.user.id })
+    .insert({ title, content, bloodtype, user_id: req.user.id })
 
     res.status(201).json({ id: result[0], title, content })
   } catch (err) {
@@ -48,13 +53,17 @@ router.post('/', async(req, res) => {
 // Update a blog post
 router.put('/:id', (req, res) => {
   const { id } = req.params;
-  const { title, content } = req.body;
+  const { title, content, bloodtype } = req.body;
+  if (!bloodtype) {
+    return res.status(400).json({ error: 'Bloodtype is required.' });
+  }
+
   if (!title && !content) {
     return res.status(400).json({ error: 'At least one field (title or content) must be provided' });
   }
   db('posts')
     .where({ id })
-    .update({ title, content, updated_at: db.fn.now() })
+    .update({ title, content, bloodtype, updated_at: db.fn.now() })
     .then((result) => {
       if (result === 0) {
         res.status(404).json({ error: 'Post not found' });
